@@ -1,0 +1,7 @@
+spring:
+  application:
+    name: ai-application-generator
+server:
+  port: 8123
+  servlet:
+    context-path: /api
