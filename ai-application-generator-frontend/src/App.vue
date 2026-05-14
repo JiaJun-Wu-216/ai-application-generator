@@ -1,10 +1,6 @@
 <template>
   <a-config-provider :locale="zhCN">
-    <h1>You did it!</h1>
-    <p>
-      Visit <a href="https://vuejs.org/" target="_blank" rel="noopener">vuejs.org</a> to read the
-      documentation
-    </p>
+    <BasicLayout />
   </a-config-provider>
 </template>
 
@@ -12,8 +8,21 @@
 import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
+import BasicLayout from '@/layouts/BasicLayout.vue'
+import {onMounted} from 'vue'
+import {healCheck} from '@/api/HealthController.ts'
 
 dayjs.locale('zh-cn')
+
+onMounted(async () => {
+  console.log(await healCheck())
+})
 </script>
 
-<style scoped></style>
+<style>
+html,
+body {
+  margin: 0;
+  padding: 0;
+}
+</style>

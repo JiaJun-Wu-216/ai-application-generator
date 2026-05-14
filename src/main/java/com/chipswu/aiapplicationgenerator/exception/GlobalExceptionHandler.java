@@ -6,8 +6,12 @@ import cn.dev33.satoken.exception.NotRoleException;
 import com.chipswu.aiapplicationgenerator.common.BaseResponse;
 import com.chipswu.aiapplicationgenerator.utils.ResultUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.util.List;
 
 /**
  * 全局异常处理器
@@ -75,6 +79,27 @@ public class GlobalExceptionHandler {
     public BaseResponse<?> businessExceptionHandler(BusinessException e) {
         log.error("BusinessException", e);
         return ResultUtils.error(e.getCode(), e.getMessage());
+    }
+
+    /**
+     * 字段校验异常处理器
+     *
+     * @param ex 字段校验异常信息
+     * @return 处理结果
+     */
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public BaseResponse<?> handleValidationException(MethodArgumentNotValidException ex) {
+        // 获取第一条错误信息（也可遍历所有错误）
+        List<FieldError> fieldErrorList = ex.getBindingResult().getFieldErrors();
+        StringBuilder errorMessage = new StringBuilder();
+        for (int i = 0; i < fieldErrorList.size(); i++) {
+            errorMessage.append(fieldErrorList.get(i).getDefaultMessage());
+            if (i + 1 < fieldErrorList.size()) {
+                errorMessage.append(",");
+            }
+        }
+        log.error("MethodArgumentNotValidException：{}", errorMessage, ex);
+        return ResultUtils.error(ErrorCode.PARAMS_ERROR, errorMessage.toString());
     }
 
     /**
