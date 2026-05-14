@@ -93,7 +93,7 @@ public class UserController {
      * @return 用户视图对象
      */
     @GetMapping("/get/vo")
-    public BaseResponse<UserVO> getUserVOById(long userId) {
+    public BaseResponse<UserVO> getUserVOById(@RequestParam long userId) {
         User user = this.getUserById(userId).getData();
         return ResultUtils.success(userService.getUserVO(user));
     }

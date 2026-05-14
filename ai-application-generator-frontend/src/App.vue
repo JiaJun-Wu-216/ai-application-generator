@@ -9,14 +9,9 @@ import zhCN from 'ant-design-vue/es/locale/zh_CN'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import BasicLayout from '@/layouts/BasicLayout.vue'
-import {onMounted} from 'vue'
-import {healCheck} from '@/api/HealthController.ts'
+import '@/access'
 
 dayjs.locale('zh-cn')
-
-onMounted(async () => {
-  console.log(await healCheck())
-})
 </script>
 
 <style>
