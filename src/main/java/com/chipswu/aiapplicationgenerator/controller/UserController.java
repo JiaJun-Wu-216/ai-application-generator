@@ -8,7 +8,7 @@ import com.chipswu.aiapplicationgenerator.constant.UserConstant;
 import com.chipswu.aiapplicationgenerator.exception.BusinessException;
 import com.chipswu.aiapplicationgenerator.exception.ErrorCode;
 import com.chipswu.aiapplicationgenerator.exception.ThrowUtils;
-import com.chipswu.aiapplicationgenerator.modal.dto.request.*;
+import com.chipswu.aiapplicationgenerator.modal.dto.user.request.*;
 import com.chipswu.aiapplicationgenerator.modal.entity.User;
 import com.chipswu.aiapplicationgenerator.modal.vo.LoginUserVO;
 import com.chipswu.aiapplicationgenerator.modal.vo.UserVO;

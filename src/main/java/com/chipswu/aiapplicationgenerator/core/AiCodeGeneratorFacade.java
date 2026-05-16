@@ -2,6 +2,7 @@ package com.chipswu.aiapplicationgenerator.core;
 
 import cn.hutool.core.util.StrUtil;
 import com.chipswu.aiapplicationgenerator.ai.AiCodeGeneratorService;
+import com.chipswu.aiapplicationgenerator.ai.AiCodeGeneratorServiceFactory;
 import com.chipswu.aiapplicationgenerator.ai.model.HtmlCodeResult;
 import com.chipswu.aiapplicationgenerator.ai.model.MultiFileCodeResult;
 import com.chipswu.aiapplicationgenerator.core.parser.CodeParserExecutor;
@@ -26,7 +27,7 @@ import java.io.File;
 public class AiCodeGeneratorFacade {
 
     @Resource
-    private AiCodeGeneratorService aiCodeGeneratorService;
+    private AiCodeGeneratorServiceFactory aiCodeGeneratorServiceFactory;
 
     /**
      * 统一入口，根据类型生成并保存代码
@@ -46,6 +47,8 @@ public class AiCodeGeneratorFacade {
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "生成类型不能为空");
         }
+        // 根据 appId 获取相应的 AI 服务实例
+        AiCodeGeneratorService aiCodeGeneratorService = aiCodeGeneratorServiceFactory.getAiCodeGeneratorService(appId);
         return switch (codeGenTypeEnum) {
             case HTML -> {
                 HtmlCodeResult htmlCodeResult = aiCodeGeneratorService.generateHtmlCode(userMessage);
@@ -76,6 +79,8 @@ public class AiCodeGeneratorFacade {
         if (codeGenTypeEnum == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "生成类型不能为空");
         }
+        // 根据 appId 获取相应的 AI 服务实例
+        AiCodeGeneratorService aiCodeGeneratorService = aiCodeGeneratorServiceFactory.getAiCodeGeneratorService(appId);
         return switch (codeGenTypeEnum) {
             case HTML -> {
                 Flux<String> codeStream = aiCodeGeneratorService.generateHtmlCodeStream(userMessage);
@@ -127,7 +132,7 @@ public class AiCodeGeneratorFacade {
      * @param userMessage 用户提示词
      * @return 保存的目录
      */
-    @Deprecated
+    /*@Deprecated
     private Flux<String> generateAndSaveHtmlCodeStream(String userMessage) {
         Flux<String> result = aiCodeGeneratorService.generateHtmlCodeStream(userMessage);
         // 字符串拼接器，用于当流式返回所有的代码后，再保存代码
@@ -148,7 +153,7 @@ public class AiCodeGeneratorFacade {
                         log.error("单文件保存失败，异常消息：{}", e.getMessage());
                     }
                 });
-    }
+    }*/
 
     /**
      * 生成多文件模型的代码并保存（流式）
@@ -156,7 +161,7 @@ public class AiCodeGeneratorFacade {
      * @param userMessage 用户提示词
      * @return 保存的目录
      */
-    @Deprecated
+    /*@Deprecated
     private Flux<String> generateAndSaveMultiFileCodeStream(String userMessage) {
         Flux<String> result = aiCodeGeneratorService.generateMultiFileCodeStream(userMessage);
         // 字符串拼接器，用于当流式返回所有的代码后，再保存代码
@@ -177,7 +182,7 @@ public class AiCodeGeneratorFacade {
                         log.error("多文件保存失败，异常消息：{}", e.getMessage());
                     }
                 });
-    }
+    }*/
 
     /**
      * 生成单文件 HTML 模型的代码并保存
@@ -185,11 +190,11 @@ public class AiCodeGeneratorFacade {
      * @param userMessage 用户提示词
      * @return 保存的目录
      */
-    @Deprecated
+    /*@Deprecated
     private File generateAndSaveHtmlCode(String userMessage) {
         HtmlCodeResult htmlCodeResult = aiCodeGeneratorService.generateHtmlCode(userMessage);
         return CodeFileSaver.saveHtmlCodeResult(htmlCodeResult);
-    }
+    }*/
 
     /**
      * 生成多文件模型的代码并保存
@@ -197,9 +202,9 @@ public class AiCodeGeneratorFacade {
      * @param userMessage 用户提示词
      * @return 保存的目录
      */
-    @Deprecated
+    /*@Deprecated
     private File generateAndSaveMultiFileCode(String userMessage) {
         MultiFileCodeResult multiFileCodeResult = aiCodeGeneratorService.generateMultiFileCode(userMessage);
         return CodeFileSaver.saveMultiFileCodeResult(multiFileCodeResult);
-    }
+    }*/
 }

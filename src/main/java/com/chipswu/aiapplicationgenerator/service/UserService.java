@@ -1,6 +1,6 @@
 package com.chipswu.aiapplicationgenerator.service;
 
-import com.chipswu.aiapplicationgenerator.modal.dto.request.UserQueryRequest;
+import com.chipswu.aiapplicationgenerator.modal.dto.user.request.UserQueryRequest;
 import com.chipswu.aiapplicationgenerator.modal.entity.User;
 import com.chipswu.aiapplicationgenerator.modal.vo.LoginUserVO;
 import com.chipswu.aiapplicationgenerator.modal.vo.UserVO;

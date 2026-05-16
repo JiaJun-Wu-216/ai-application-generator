@@ -1,5 +1,6 @@
 package com.chipswu.aiapplicationgenerator;
 
+import dev.langchain4j.community.store.embedding.redis.spring.RedisEmbeddingStoreAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -8,7 +9,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 
 @MapperScan("com.chipswu.aiapplicationgenerator.mapper")
 @Slf4j
-@SpringBootApplication
+@SpringBootApplication(exclude = {RedisEmbeddingStoreAutoConfiguration.class})  // 排除 LangChain4j 中的 Redis 向量存储自动配置
 public class AiApplicationGeneratorApplication {
 
     public static void main(String[] args) {

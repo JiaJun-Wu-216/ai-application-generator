@@ -37,7 +37,7 @@ export const updateApp = (appUpdateRequest: AppUpdateRequest): Promise<BaseRespo
  * @param deleteRequest 删除请求
  * @return 删除结果
  */
-export const deleteAppOfUserClient = (
+export const deleteAppApi = (
   deleteRequest: DeleteRequest,
 ): Promise<BaseResponse<boolean>> => {
   return request.delete(requestPrefix + '/delete', {

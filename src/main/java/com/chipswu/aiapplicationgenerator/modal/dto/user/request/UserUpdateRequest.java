@@ -1,4 +1,4 @@
-package com.chipswu.aiapplicationgenerator.modal.dto.request;
+package com.chipswu.aiapplicationgenerator.modal.dto.user.request;
 
 import lombok.Data;
 

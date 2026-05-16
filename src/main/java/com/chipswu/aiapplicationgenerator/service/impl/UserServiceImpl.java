@@ -9,7 +9,7 @@ import com.chipswu.aiapplicationgenerator.constant.UserConstant;
 import com.chipswu.aiapplicationgenerator.exception.BusinessException;
 import com.chipswu.aiapplicationgenerator.exception.ErrorCode;
 import com.chipswu.aiapplicationgenerator.mapper.UserMapper;
-import com.chipswu.aiapplicationgenerator.modal.dto.request.UserQueryRequest;
+import com.chipswu.aiapplicationgenerator.modal.dto.user.request.UserQueryRequest;
 import com.chipswu.aiapplicationgenerator.modal.entity.User;
 import com.chipswu.aiapplicationgenerator.modal.enums.AccountStatusEnum;
 import com.chipswu.aiapplicationgenerator.modal.enums.UserRoleEnum;
