@@ -33,9 +33,13 @@ public class AiCodeGeneratorFacade {
      *
      * @param userMessage     用户提示词
      * @param codeGenTypeEnum 代码生成类型
+     * @param appId           应用 ID
      * @return 保存的文件目录
      */
-    public File generateAndSaveCode(String userMessage, CodeGenTypeEnum codeGenTypeEnum) {
+    public File generateAndSaveCode(String userMessage,
+                                    CodeGenTypeEnum codeGenTypeEnum,
+                                    Long appId
+    ) {
         if (StrUtil.isBlank(userMessage)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户提示词不能为空");
         }
@@ -45,11 +49,11 @@ public class AiCodeGeneratorFacade {
         return switch (codeGenTypeEnum) {
             case HTML -> {
                 HtmlCodeResult htmlCodeResult = aiCodeGeneratorService.generateHtmlCode(userMessage);
-                yield CodeFileSaverExecutor.executeSaver(htmlCodeResult, CodeGenTypeEnum.HTML);
+                yield CodeFileSaverExecutor.executeSaver(htmlCodeResult, CodeGenTypeEnum.HTML, appId);
             }
             case MULTI_FILE -> {
                 MultiFileCodeResult multiFileCodeResult = aiCodeGeneratorService.generateMultiFileCode(userMessage);
-                yield CodeFileSaverExecutor.executeSaver(multiFileCodeResult, CodeGenTypeEnum.MULTI_FILE);
+                yield CodeFileSaverExecutor.executeSaver(multiFileCodeResult, CodeGenTypeEnum.MULTI_FILE, appId);
             }
         };
     }
@@ -59,9 +63,13 @@ public class AiCodeGeneratorFacade {
      *
      * @param userMessage     用户提示词
      * @param codeGenTypeEnum 代码生成类型
+     * @param appId           应用 ID
      * @return 保存的文件目录
      */
-    public Flux<String> generateAndSaveCodeStream(String userMessage, CodeGenTypeEnum codeGenTypeEnum) {
+    public Flux<String> generateAndSaveCodeStream(String userMessage,
+                                                  CodeGenTypeEnum codeGenTypeEnum,
+                                                  Long appId
+    ) {
         if (StrUtil.isBlank(userMessage)) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "用户提示词不能为空");
         }
@@ -71,11 +79,11 @@ public class AiCodeGeneratorFacade {
         return switch (codeGenTypeEnum) {
             case HTML -> {
                 Flux<String> codeStream = aiCodeGeneratorService.generateHtmlCodeStream(userMessage);
-                yield processCodeStream(codeStream, CodeGenTypeEnum.HTML);
+                yield processCodeStream(codeStream, CodeGenTypeEnum.HTML, appId);
             }
             case MULTI_FILE -> {
                 Flux<String> codeStream = aiCodeGeneratorService.generateMultiFileCodeStream(userMessage);
-                yield processCodeStream(codeStream, CodeGenTypeEnum.MULTI_FILE);
+                yield processCodeStream(codeStream, CodeGenTypeEnum.MULTI_FILE, appId);
             }
         };
     }
@@ -85,9 +93,10 @@ public class AiCodeGeneratorFacade {
      *
      * @param codeStream  代码流
      * @param codeGenType 代码生成类型
+     * @param appId       应用 ID
      * @return 流式响应
      */
-    private Flux<String> processCodeStream(Flux<String> codeStream, CodeGenTypeEnum codeGenType) {
+    private Flux<String> processCodeStream(Flux<String> codeStream, CodeGenTypeEnum codeGenType, Long appId) {
         StringBuilder codeBuilder = new StringBuilder();
         return codeStream
                 // 实时收集代码片段
@@ -99,7 +108,7 @@ public class AiCodeGeneratorFacade {
                         // 使用执行器解析代码
                         Object parsedResult = CodeParserExecutor.executeParser(completeCode, codeGenType);
                         // 使用执行器保存代码
-                        File savedDir = CodeFileSaverExecutor.executeSaver(parsedResult, codeGenType);
+                        File savedDir = CodeFileSaverExecutor.executeSaver(parsedResult, codeGenType, appId);
                         log.info("{}生成文件保存成功，路径为：{}",
                                 codeGenType.getText(),
                                 savedDir.getAbsolutePath());

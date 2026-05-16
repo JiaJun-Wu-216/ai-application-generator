@@ -13,7 +13,7 @@ public class MyBatisFlexCodeGenerator {
     /**
      * 需要生成代码的表名
      */
-    private static final String[] TABLE_NAMES = {"user"};
+    private static final String[] TABLE_NAMES = {"chat_history"};
 
     public static void main(String[] args) {
         // 获取元信息

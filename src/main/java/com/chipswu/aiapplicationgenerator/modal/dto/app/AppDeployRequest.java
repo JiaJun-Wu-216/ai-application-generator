@@ -1,4 +1,4 @@
-package com.chipswu.aiapplicationgenerator.common;
+package com.chipswu.aiapplicationgenerator.modal.dto.app;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
@@ -8,21 +8,21 @@ import java.io.Serial;
 import java.io.Serializable;
 
 /**
- * 通用删除请求类
+ * 应用部署请求类
  *
  * @author WuJiaJun
  */
 @Data
-public class DeleteRequest implements Serializable {
+public class AppDeployRequest implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
 
     /**
-     * 主键
+     * 应用 ID
      */
-    @Min(value = 1, message = "主键参数异常")
-    @NotNull(message = "主键不能为空")
-    private Long id;
+    @Min(value = 1, message = "应用 ID 参数异常")
+    @NotNull(message = "应用 ID 不能为空")
+    private Long appId;
 
 }

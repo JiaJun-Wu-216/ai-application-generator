@@ -25,7 +25,7 @@ export interface PageRequest {
   /**
    * 当前页码
    */
-  current: number
+  pageNum: number
 
   /**
    * 每页展示数量
@@ -80,7 +80,7 @@ export interface Page<T> {
   /**
    * 当前页数据
    */
-  records?: T
+  records?: T[]
 
   /**
    * 总页数

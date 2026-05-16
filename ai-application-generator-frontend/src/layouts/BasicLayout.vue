@@ -19,19 +19,6 @@ import GlobalFooter from '../components/GlobalFooter.vue'
 }
 
 .layout-content {
-  padding: 24px;
   background: #f5f5f5;
-}
-
-@media (max-width: 768px) {
-  .layout-content {
-    padding: 16px;
-  }
-}
-
-@media (max-width: 480px) {
-  .layout-content {
-    padding: 12px;
-  }
 }
 </style>

@@ -2,6 +2,8 @@ package com.chipswu.aiapplicationgenerator.core.saver;
 
 import com.chipswu.aiapplicationgenerator.ai.model.HtmlCodeResult;
 import com.chipswu.aiapplicationgenerator.ai.model.MultiFileCodeResult;
+import com.chipswu.aiapplicationgenerator.exception.BusinessException;
+import com.chipswu.aiapplicationgenerator.exception.ErrorCode;
 import com.chipswu.aiapplicationgenerator.modal.enums.CodeGenTypeEnum;
 
 import java.io.File;
@@ -24,12 +26,16 @@ public class CodeFileSaverExecutor {
      *
      * @param codeResult  代码结果对象
      * @param codeGenType 代码生成类型
+     * @param appId       应用 ID
      * @return 保存的目录
      */
-    public static File executeSaver(Object codeResult, CodeGenTypeEnum codeGenType) {
+    public static File executeSaver(Object codeResult, CodeGenTypeEnum codeGenType, Long appId) {
+        if (appId == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR, "应用 ID不能为空");
+        }
         return switch (codeGenType) {
-            case HTML -> htmlCodeFileSaver.saveCode((HtmlCodeResult) codeResult);
-            case MULTI_FILE -> multiFileCodeFileSaver.saveCode((MultiFileCodeResult) codeResult);
+            case HTML -> htmlCodeFileSaver.saveCode((HtmlCodeResult) codeResult, appId);
+            case MULTI_FILE -> multiFileCodeFileSaver.saveCode((MultiFileCodeResult) codeResult, appId);
         };
     }
 }

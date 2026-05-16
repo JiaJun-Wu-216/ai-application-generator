@@ -130,7 +130,7 @@ export const updateUser = (
  */
 export const listUserVOByPage = (
   userQueryRequest: UserQueryRequest,
-): Promise<BaseResponse<Page<UserVO[]>>> => {
+): Promise<BaseResponse<Page<UserVO>>> => {
   return request.post(requestPrefix + '/list/page/vo', userQueryRequest)
 }
 
