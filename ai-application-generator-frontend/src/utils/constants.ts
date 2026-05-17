@@ -1,8 +1,6 @@
 /**
  * 表单验证规则
  */
-
-// 表单验证规则
 export const FORM_RULES = {
   APP_NAME: {
     MIN_LENGTH: 1,

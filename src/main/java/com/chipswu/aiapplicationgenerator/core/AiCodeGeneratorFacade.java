@@ -134,7 +134,7 @@ public class AiCodeGeneratorFacade {
                         sink.complete();
                     })
                     .onError((Throwable error) -> {
-                        error.printStackTrace();
+                        log.error(String.valueOf(error),error);
                         sink.error(error);
                     })
                     .start();
