@@ -32,6 +32,7 @@ public class ReasoningStreamingChatModelConfig {
                 .modelName(modelName)
                 .logRequests(true)
                 .logResponses(true)
+                .sendThinking(true)
                 .returnThinking(true)
                 .build();
     }

@@ -8,6 +8,7 @@ import cn.hutool.core.util.StrUtil;
 import com.chipswu.aiapplicationgenerator.constant.AppConstant;
 import com.chipswu.aiapplicationgenerator.constant.UserConstant;
 import com.chipswu.aiapplicationgenerator.core.AiCodeGeneratorFacade;
+import com.chipswu.aiapplicationgenerator.core.handler.StreamHandlerExecutor;
 import com.chipswu.aiapplicationgenerator.exception.BusinessException;
 import com.chipswu.aiapplicationgenerator.exception.ErrorCode;
 import com.chipswu.aiapplicationgenerator.exception.ThrowUtils;
@@ -58,6 +59,9 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
     @Resource
     private ChatHistoryService chatHistoryService;
 
+    @Resource
+    private StreamHandlerExecutor streamHandlerExecutor;
+
     /**
      * 创建应用
      *
@@ -77,7 +81,8 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         // 应用名称暂时为 initPrompt 的前 12 位
         app.setAppName(initPrompt.substring(0, Math.min(initPrompt.length(), 12)));
         // 暂时设置为多文件生成
-        app.setCodeGenType(CodeGenTypeEnum.MULTI_FILE.getValue());
+//        app.setCodeGenType(CodeGenTypeEnum.MULTI_FILE.getValue());
+        app.setCodeGenType(CodeGenTypeEnum.VUE_PROJECT.getValue());
         // 插入数据库
         boolean result = this.save(app);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
@@ -321,31 +326,11 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
         }
         // 5. 通过校验后，添加用户消息到对话历史
         boolean result = chatHistoryService.addChatMessage(appId, message, ChatHistoryMessageTypeEnum.USER.getValue(), loginUser.getId());
-        ThrowUtils.throwIf(!result,ErrorCode.OPERATION_ERROR,"添加用户消息到对话历史失败");
+        ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "添加用户消息到对话历史失败");
         // 6. 调用 AI 生成代码（流式）
-        Flux<String> contentFlux = aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
+        Flux<String> codeStream = aiCodeGeneratorFacade.generateAndSaveCodeStream(message, codeGenTypeEnum, appId);
         // 7. 收集AI响应内容并在完成后记录到对话历史
-        StringBuilder aiResponseBuilder = new StringBuilder();
-        return contentFlux
-                .map(chunk -> {
-                    // 收集AI响应内容
-                    aiResponseBuilder.append(chunk);
-                    return chunk;
-                })
-                .doOnComplete(() -> {
-                    // 流式响应完成后，添加AI消息到对话历史
-                    String aiResponse = aiResponseBuilder.toString();
-                    if (StrUtil.isNotBlank(aiResponse)) {
-                        boolean addResult = chatHistoryService.addChatMessage(appId, aiResponse, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
-                        ThrowUtils.throwIf(!addResult,ErrorCode.OPERATION_ERROR,"添加用户消息到对话历史失败");
-                    }
-                })
-                .doOnError(error -> {
-                    // 如果AI回复失败，也要记录错误消息
-                    String errorMessage = "AI回复失败: " + error.getMessage();
-                    boolean addResult = chatHistoryService.addChatMessage(appId, errorMessage, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
-                    ThrowUtils.throwIf(!addResult,ErrorCode.OPERATION_ERROR,"添加用户消息到对话历史失败");
-                });
+        return streamHandlerExecutor.doExecute(codeStream, chatHistoryService, appId, loginUser, codeGenTypeEnum);
     }
 
     /**

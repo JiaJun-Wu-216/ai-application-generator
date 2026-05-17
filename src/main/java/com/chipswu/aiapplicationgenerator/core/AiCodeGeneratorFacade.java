@@ -1,8 +1,12 @@
 package com.chipswu.aiapplicationgenerator.core;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.chipswu.aiapplicationgenerator.ai.AiCodeGeneratorService;
 import com.chipswu.aiapplicationgenerator.ai.AiCodeGeneratorServiceFactory;
+import com.chipswu.aiapplicationgenerator.ai.message.AiResponseMessage;
+import com.chipswu.aiapplicationgenerator.ai.message.ToolExecutedMessage;
+import com.chipswu.aiapplicationgenerator.ai.message.ToolRequestMessage;
 import com.chipswu.aiapplicationgenerator.ai.model.HtmlCodeResult;
 import com.chipswu.aiapplicationgenerator.ai.model.MultiFileCodeResult;
 import com.chipswu.aiapplicationgenerator.core.parser.CodeParserExecutor;
@@ -10,6 +14,9 @@ import com.chipswu.aiapplicationgenerator.core.saver.CodeFileSaverExecutor;
 import com.chipswu.aiapplicationgenerator.exception.BusinessException;
 import com.chipswu.aiapplicationgenerator.exception.ErrorCode;
 import com.chipswu.aiapplicationgenerator.modal.enums.CodeGenTypeEnum;
+import dev.langchain4j.model.chat.response.ChatResponse;
+import dev.langchain4j.service.TokenStream;
+import dev.langchain4j.service.tool.ToolExecution;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -97,12 +104,43 @@ public class AiCodeGeneratorFacade {
                 yield processCodeStream(codeStream, CodeGenTypeEnum.MULTI_FILE, appId);
             }
             case VUE_PROJECT -> {
-                Flux<String> codeStream = aiCodeGeneratorService.generateVueProjectCodeStream(appId, userMessage);
-                // todo：临时使用 multi_file 进行占位
-                yield processCodeStream(codeStream, CodeGenTypeEnum.MULTI_FILE, appId);
+                TokenStream tokenStream = aiCodeGeneratorService.generateVueProjectCodeStream(appId, userMessage);
+                yield processTokenStream(tokenStream);
             }
         };
     }
+
+    /**
+     * 将 TokenStream 转换为 Flux<String>，并传递工具调用信息
+     *
+     * @param tokenStream TokenStream 对象
+     * @return Flux<String> 流式响应
+     */
+    private Flux<String> processTokenStream(TokenStream tokenStream) {
+        return Flux.create(sink -> {
+            tokenStream.onPartialResponse((String partialResponse) -> {
+                        AiResponseMessage aiResponseMessage = new AiResponseMessage(partialResponse);
+                        sink.next(JSONUtil.toJsonStr(aiResponseMessage));
+                    })
+                    .onPartialToolCall((partialToolCallHandler) -> {
+                        ToolRequestMessage toolRequestMessage = new ToolRequestMessage(partialToolCallHandler);
+                        sink.next(JSONUtil.toJsonStr(toolRequestMessage));
+                    })
+                    .onToolExecuted((ToolExecution toolExecution) -> {
+                        ToolExecutedMessage toolExecutedMessage = new ToolExecutedMessage(toolExecution);
+                        sink.next(JSONUtil.toJsonStr(toolExecutedMessage));
+                    })
+                    .onCompleteResponse((ChatResponse response) -> {
+                        sink.complete();
+                    })
+                    .onError((Throwable error) -> {
+                        error.printStackTrace();
+                        sink.error(error);
+                    })
+                    .start();
+        });
+    }
+
 
     /**
      * 通用流式代码处理方法
