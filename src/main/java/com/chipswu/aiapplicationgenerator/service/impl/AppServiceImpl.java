@@ -336,14 +336,14 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, App> implements AppSe
                     // 流式响应完成后，添加AI消息到对话历史
                     String aiResponse = aiResponseBuilder.toString();
                     if (StrUtil.isNotBlank(aiResponse)) {
-                        boolean addResult = chatHistoryService.addChatMessage(appId, aiResponse, ChatHistoryMessageTypeEnum.USER.getValue(), loginUser.getId());
+                        boolean addResult = chatHistoryService.addChatMessage(appId, aiResponse, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
                         ThrowUtils.throwIf(!addResult,ErrorCode.OPERATION_ERROR,"添加用户消息到对话历史失败");
                     }
                 })
                 .doOnError(error -> {
                     // 如果AI回复失败，也要记录错误消息
                     String errorMessage = "AI回复失败: " + error.getMessage();
-                    boolean addResult = chatHistoryService.addChatMessage(appId, errorMessage, ChatHistoryMessageTypeEnum.USER.getValue(), loginUser.getId());
+                    boolean addResult = chatHistoryService.addChatMessage(appId, errorMessage, ChatHistoryMessageTypeEnum.AI.getValue(), loginUser.getId());
                     ThrowUtils.throwIf(!addResult,ErrorCode.OPERATION_ERROR,"添加用户消息到对话历史失败");
                 });
     }

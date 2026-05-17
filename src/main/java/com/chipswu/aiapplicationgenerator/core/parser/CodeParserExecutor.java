@@ -1,5 +1,7 @@
 package com.chipswu.aiapplicationgenerator.core.parser;
 
+import com.chipswu.aiapplicationgenerator.exception.BusinessException;
+import com.chipswu.aiapplicationgenerator.exception.ErrorCode;
 import com.chipswu.aiapplicationgenerator.modal.enums.CodeGenTypeEnum;
 
 /**
@@ -26,6 +28,7 @@ public class CodeParserExecutor {
         return switch (codeGenType) {
             case HTML -> htmlCodeParser.parseCode(codeContent);
             case MULTI_FILE -> multiFileCodeParser.parseCode(codeContent);
+            default -> throw new BusinessException(ErrorCode.SYSTEM_ERROR, "不支持的代码生成类型: " + codeGenType);
         };
     }
 }
